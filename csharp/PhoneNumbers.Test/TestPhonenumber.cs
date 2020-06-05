@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace PhoneNumbers.Test
@@ -31,6 +33,35 @@ namespace PhoneNumbers.Test
 
             Assert.Equal(numberA, numberB);
             Assert.Equal(numberA.GetHashCode(), numberB.GetHashCode());
+        }
+
+        [Fact]
+        public void Test_SA_Number()
+        {
+            var phoneNumbersToValidate = new List<string>() 
+            { 
+                "+270833077082", "0833077089","+27833077084","+270112781905","0117681906","+27112781907",
+                "00270833077082", "(012)7681907", "99270833077082", " (012) 7681908"
+            };
+            phoneNumbersToValidate.Reverse();
+
+            foreach (string phoneNumber in phoneNumbersToValidate)
+            {
+                var numberToCheck = phoneNumber;
+                if (phoneNumber.StartsWith("00"))
+                {
+                    numberToCheck = "+" + phoneNumber.Remove(0, 2);
+                }
+                if (phoneNumber.StartsWith("99"))
+                {
+                    numberToCheck = "+" + phoneNumber.Remove(0, 2);
+                }                               
+
+                var libPhoneNumber = PhoneNumberUtil.GetInstance().Parse(numberToCheck, "ZA");
+
+                Assert.True(PhoneNumberUtil.GetInstance().IsValidNumberForRegion(libPhoneNumber, "ZA"));
+            }           
+                
         }
 
         [Fact]
